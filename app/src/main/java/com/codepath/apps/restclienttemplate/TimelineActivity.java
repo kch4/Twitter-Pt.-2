@@ -1,15 +1,23 @@
 package com.codepath.apps.restclienttemplate;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.widget.Toast;
 
+import com.codepath.apps.restclienttemplate.models.Tweet;
+
+import fragments.TweetsListFragment;
 import fragments.TweetsPagerAdapter;
 
 
-public class TimelineActivity extends AppCompatActivity{
-//    private SwipeRefreshLayout swipeContainer;
+public class TimelineActivity extends AppCompatActivity implements TweetsListFragment.TweetSelectedListener{
+    private SwipeRefreshLayout swipeContainer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,21 +85,27 @@ public class TimelineActivity extends AppCompatActivity{
 //        });
 //    }
 
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        // Inflate the menu; this adds items to the action bar if it is present.
-//        getMenuInflater().inflate(R.menu.menu_main, menu);
-//        return true;
-//    }
-//    private final int REQUEST_CODE = 20;
-//    private final int RESULT_OK = -1;
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_timeline, menu);
+        return true;
+    }
+
+    public void onProfileView(MenuItem item) {
+        // launch the profile view
+        Intent i = new Intent(this, ProfileActivity.class);
+        startActivity(i);
+    }
+    private final int REQUEST_CODE = 20;
+    private final int RESULT_OK = -1;
 //
-//    public void onComposeActivity(MenuItem miCompose) {
-//        // first parameter is the context, second is the class of the activity to launch
-//        Intent i = new Intent(TimelineActivity.this, ComposeActivity.class);
-//        startActivityForResult(i, REQUEST_CODE); // brings up the second activity
-//    }
-//
+    public void onComposeActivity(MenuItem miCompose) {
+        // first parameter is the context, second is the class of the activity to launch
+        Intent i = new Intent(TimelineActivity.this, ComposeActivity.class);
+        startActivityForResult(i, REQUEST_CODE); // brings up the second activity
+    }
+
 //    public void onActivityResult(int requestCode, int resultCode, Intent data){
 //        if (resultCode==RESULT_OK && (requestCode == REQUEST_CODE)){
 //            Tweet tweet = (Tweet)data.getParcelableExtra("new");
@@ -104,4 +118,9 @@ public class TimelineActivity extends AppCompatActivity{
 //    }
 
 
+    @Override
+    public void onTweetSelected(Tweet tweet) {
+        Toast.makeText(this, tweet.body, Toast.LENGTH_SHORT).show();
+
+    }
 }
