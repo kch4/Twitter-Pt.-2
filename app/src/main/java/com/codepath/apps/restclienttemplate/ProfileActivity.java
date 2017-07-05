@@ -1,5 +1,6 @@
 package com.codepath.apps.restclienttemplate;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
@@ -7,6 +8,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.codepath.apps.restclienttemplate.models.Tweet;
 import com.codepath.apps.restclienttemplate.models.User;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
@@ -19,12 +21,15 @@ import fragments.UserTimelineFragment;
 public class ProfileActivity extends AppCompatActivity {
 
     TwitterClient client;
+    Tweet tweet;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
 
+        Boolean isMe = getIntent().getExtras().getBoolean("is_me");
         String screenName = getIntent().getStringExtra("screen_name");
+
         // create the user fragment
         UserTimelineFragment userTimelineFragment = UserTimelineFragment.newInstance(screenName);
         // display the user timeline fragment inside the container (dynamically)
@@ -37,21 +42,28 @@ public class ProfileActivity extends AppCompatActivity {
         ft.commit();
 
         client = TwitterApp.getRestClient();
-        client.getUserInfo(new JsonHttpResponseHandler(){
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                // deserialize the User object
-                try {
-                    User user = User.fromJSON(response);
-                    // set the title of the ActionBar based on the user information
-                    getSupportActionBar().setTitle(user.screenName);
-                    // populate the user headline
-                    populateUserHeadline(user);
-                } catch (JSONException e){
-                    e.printStackTrace();
+        if (isMe) {
+            client.getUserInfo(new JsonHttpResponseHandler() {
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                    // deserialize the User object
+                    try {
+                        User user = User.fromJSON(response);
+                        // set the title of the ActionBar based on the user information
+                        getSupportActionBar().setTitle(user.screenName);
+                        // populate the user headline
+                        populateUserHeadline(user);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                 }
-            }
-        });
+            });
+        }
+        else{
+            Intent intent = getIntent();
+            intent.setExtrasClassLoader(User.class.getClassLoader());
+//            tweet.getIntent.
+        }
     }
     public void populateUserHeadline(User user){
         TextView tvName = (TextView) findViewById(R.id.tvName);

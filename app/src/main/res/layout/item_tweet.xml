@@ -55,8 +55,8 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/ivProfileImage"
         android:layout_toStartOf="@+id/ibFav"
-        android:background="@color/white"
         android:tint="?attr/colorButtonNormal"
+        android:backgroundTint="@color/white"
         app:srcCompat="@drawable/ic_vector_compose_dm" />
 
     <ImageButton
@@ -65,7 +65,6 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/tvBody"
         android:layout_toStartOf="@+id/ibRetweet"
-        android:background="@color/white"
         android:backgroundTint="@color/white"
         android:tint="?attr/colorButtonNormal"
         app:srcCompat="@drawable/ic_vector_heart_stroke" />
@@ -76,8 +75,8 @@
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_below="@+id/tvBody"
-        android:background="@color/white"
         android:tint="?attr/colorButtonNormal"
+        android:backgroundTint="@color/white"
         app:srcCompat="@drawable/ic_vector_retweet_stroke" />
 
 </RelativeLayout>

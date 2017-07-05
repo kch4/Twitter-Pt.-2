@@ -4,11 +4,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -120,19 +118,38 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.ViewHolder> 
 
         @Override
         public void onClick(View v) {
-            Button b = (Button) v;
+            int position = getAdapterPosition();
+            //Button b = (Button) v;
             Intent intent;
-            switch(b.getId()) {
-                case R.id.ibReply:
-                    //compose activity
-                    Log.d("Sending data", "Reply"); // perform
-//                    intent = new Intent(context, ComposeActivity.class);
-                    // action
-                    break;
-//                case R.id.YOUR_SECOND_BUTTON:
-//                    // Do something
+//            switch(v.getId()) {
+//
+//                case R.id.ivProfileImage:
+//                    if (position != RecyclerView.NO_POSITION) {
+//                        Tweet tweet = mTweets.get(position);
+//                        intent = new Intent(v.getContext(), ProfileActivity.class);
+//                        intent.putExtra("is_me", false);
+//                        intent.putExtra("screen_name", tweet.user.screenName);
+//                        //intent.putExtra("")
+//                    }
 //                    break;
-            }
+//                case R.id.tvBody:
+//                    if (position != RecyclerView.NO_POSITION) {
+//                        Tweet tweet = mTweets.get(position);
+//                        intent = new Intent(v.getContext(), DetailActivity.class);
+//                        intent.putExtra("body", tweet.body);
+//                        intent.putExtra("screen_name", tweet.user.screenName);
+//                        //intent.putExtra("")
+//                    }
+//                case R.id.ibReply:
+//                    //compose activity
+//                    Log.d("Sending data", "Reply"); // perform
+////                    intent = new Intent(context, ComposeActivity.class);
+//                    // action
+//                    break;
+////                case R.id.YOUR_SECOND_BUTTON:
+////                    // Do something
+////                    break;
+//            }
         }
     }
     public void clear() {
@@ -146,7 +163,7 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.ViewHolder> 
         notifyDataSetChanged();
     }
 
-    public String getRelativeTimeAgo(String rawJsonDate) {
+    public static String getRelativeTimeAgo(String rawJsonDate) {
         String twitterFormat = "EEE MMM dd HH:mm:ss ZZZZZ yyyy";
         SimpleDateFormat sf = new SimpleDateFormat(twitterFormat, Locale.ENGLISH);
         sf.setLenient(true);

@@ -42,7 +42,8 @@ public class TweetsPagerAdapter extends FragmentPagerAdapter {
     @Override
     public CharSequence getPageTitle(int position) {
         // generate title based on item position
-        return tabTitles[position];
+//        return tabTitles[position];
+        return null;
 
     }
 }

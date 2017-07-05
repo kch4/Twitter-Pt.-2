@@ -4,10 +4,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import com.codepath.apps.restclienttemplate.models.Tweet;
 
@@ -17,7 +17,7 @@ import fragments.TweetsPagerAdapter;
 
 public class TimelineActivity extends AppCompatActivity implements TweetsListFragment.TweetSelectedListener{
 //    private SwipeRefreshLayout swipeContainer;
-
+    AlertDialog tweetAlertDialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,7 +30,15 @@ public class TimelineActivity extends AppCompatActivity implements TweetsListFra
         // setup the TabLayout to use the view pager
         TabLayout tabLayout = (TabLayout) findViewById(R.id.sliding_tabs);
         tabLayout.setupWithViewPager(vpPager);
+        int[] imageResId = {
+                R.drawable.ic_vector_home,
+                R.drawable.ic_vector_notifications};
+
+        for (int i = 0; i < imageResId.length; i++) {
+            tabLayout.getTabAt(i).setIcon(imageResId[i]);
+        }
     }
+
 
 
 //        // Lookup the swipe container view
@@ -94,6 +102,7 @@ public class TimelineActivity extends AppCompatActivity implements TweetsListFra
     public void onProfileView(MenuItem item) {
         // launch the profile view
         Intent i = new Intent(this, ProfileActivity.class);
+        i.putExtra("is_me", true);
         startActivity(i);
     }
     private final int REQUEST_CODE = 20;
@@ -104,6 +113,7 @@ public class TimelineActivity extends AppCompatActivity implements TweetsListFra
         Intent i = new Intent(TimelineActivity.this, ComposeActivity.class);
         startActivityForResult(i, REQUEST_CODE); // brings up the second activity
     }
+
 
 //    public void onActivityResult(int requestCode, int resultCode, Intent data){
 //        if (resultCode==RESULT_OK && (requestCode == REQUEST_CODE)){
@@ -119,7 +129,18 @@ public class TimelineActivity extends AppCompatActivity implements TweetsListFra
 
     @Override
     public void onTweetSelected(Tweet tweet) {
-        Toast.makeText(this, tweet.body, Toast.LENGTH_SHORT).show();
 
+        Intent intent = new Intent(this, DetailActivity.class);
+        intent.putExtra("tweet", tweet);
+        startActivity(intent);
+        //Toast.makeText(this, tweet.body, Toast.LENGTH_SHORT).show();
+        //intent.putExtra("body", tweet.body);
+//        // Inflate the tweet dialog
+//        View tweetView = LayoutInflater.from(this).inflate(R.layout.item_tweet, null);
+//        // Create the Alert Dialog Builder
+//        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+//        // Set the view that the alert dialog builder should create
+//        alertDialogBuilder.setView(tweetView);
+//        tweetAlertDialog = alertDialogBuilder.create();
     }
 }
