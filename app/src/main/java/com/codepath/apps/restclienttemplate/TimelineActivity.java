@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -17,7 +16,7 @@ import fragments.TweetsPagerAdapter;
 
 
 public class TimelineActivity extends AppCompatActivity implements TweetsListFragment.TweetSelectedListener{
-    private SwipeRefreshLayout swipeContainer;
+//    private SwipeRefreshLayout swipeContainer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
