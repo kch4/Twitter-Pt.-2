@@ -111,6 +111,7 @@ public class TimelineActivity extends AppCompatActivity implements TweetsListFra
     public void onComposeActivity(MenuItem miCompose) {
         // first parameter is the context, second is the class of the activity to launch
         Intent i = new Intent(TimelineActivity.this, ComposeActivity.class);
+        i.putExtra("replying", false);
         startActivityForResult(i, REQUEST_CODE); // brings up the second activity
     }
 

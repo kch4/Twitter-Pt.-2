@@ -78,6 +78,17 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.ViewHolder> 
                 ((Activity) context).startActivity(i);
             }
         });
+        holder.ibReply.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(context, ComposeActivity.class);
+                i.putExtra("replying", true);
+//                i.putExtra("screen_name", tweet.user.screenName);
+//                i.putExtra("user_ID", String.valueOf(tweet.user.uid));
+                i.putExtra("currentTweet", tweet);
+                ((Activity) context).startActivity(i);
+            }
+        });
     }
 
     @Override
