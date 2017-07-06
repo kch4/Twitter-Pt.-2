@@ -11,6 +11,7 @@ import android.view.MenuItem;
 
 import com.codepath.apps.restclienttemplate.models.Tweet;
 
+import fragments.HomeTimelineFragment;
 import fragments.TweetsListFragment;
 import fragments.TweetsPagerAdapter;
 
@@ -18,15 +19,17 @@ import fragments.TweetsPagerAdapter;
 public class TimelineActivity extends AppCompatActivity implements TweetsListFragment.TweetSelectedListener{
 //    private SwipeRefreshLayout swipeContainer;
     AlertDialog tweetAlertDialog;
+    TweetsPagerAdapter pagerAdapter;
+    ViewPager vpPager;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_timeline);
-
         // get the view pager
-        ViewPager vpPager = (ViewPager) findViewById(R.id.viewpager);
+        vpPager = (ViewPager) findViewById(R.id.viewpager);
+        pagerAdapter = new TweetsPagerAdapter(getSupportFragmentManager(),this);
         // set the adapter for the pager
-        vpPager.setAdapter(new TweetsPagerAdapter(getSupportFragmentManager(),this));
+        vpPager.setAdapter(pagerAdapter);
         // setup the TabLayout to use the view pager
         TabLayout tabLayout = (TabLayout) findViewById(R.id.sliding_tabs);
         tabLayout.setupWithViewPager(vpPager);
@@ -116,16 +119,14 @@ public class TimelineActivity extends AppCompatActivity implements TweetsListFra
     }
 
 
-//    public void onActivityResult(int requestCode, int resultCode, Intent data){
-//        if (resultCode==RESULT_OK && (requestCode == REQUEST_CODE)){
-//            Tweet tweet = (Tweet)data.getParcelableExtra("new");
-//            tweets.add(0, tweet);
-//            tweetAdapter.notifyItemInserted(0);
-//            rvTweets.scrollToPosition(0);
-//            //Toast.makeText(this, "Hey", Toast.LENGTH_SHORT).show();
-//        }
-//
-//    }
+    public void onActivityResult(int requestCode, int resultCode, Intent data){
+        if (resultCode==RESULT_OK && (requestCode == REQUEST_CODE)){
+            Tweet tweet = (Tweet)data.getParcelableExtra("new");
+            ((HomeTimelineFragment) pagerAdapter.getItem(vpPager.getCurrentItem())).addTweet(tweet);
+            //Toast.makeText(this, "Hey", Toast.LENGTH_SHORT).show();
+        }
+
+    }
 
 
     @Override

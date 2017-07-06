@@ -55,6 +55,11 @@ public class TweetsListFragment extends Fragment implements TweetAdapter.TweetAd
 
         return v;
     }
+    public void addTweet(Tweet tweet){
+            tweets.add(0, tweet);
+            tweetAdapter.notifyItemInserted(0);
+            rvTweets.scrollToPosition(0);
+    }
     public void addItems(JSONArray response){
         for (int i = 0; i < response.length(); i++) {
             // convert each object to a Tweet model
