@@ -71,6 +71,13 @@ public class TwitterClient extends OAuthBaseClient {
 		// Can specify query string params directly or through RequestParams.
 		client.get(apiUrl, null, handler);
 	}
+    public void getOtherInfo(String userName, long userID, AsyncHttpResponseHandler handler) {
+        String apiUrl = getApiUrl("users/show.json");
+        RequestParams params = new RequestParams();
+        params.put("screen_name", userName);
+        params.put("user_id", userID);
+        client.get(apiUrl,params,handler);
+    }
     public void sendTweet(String message, AsyncHttpResponseHandler handler) {
         String apiUrl = getApiUrl("statuses/update.json");
         // Can specify query string params directly or through RequestParams.
@@ -87,12 +94,9 @@ public class TwitterClient extends OAuthBaseClient {
         RequestParams params = new RequestParams();
         params.put("status", message);
         params.put(key, paramMessage);
+        client.post(apiUrl, params, handler);
     }
-    // My profile
-    public void getMyProfile(AsyncHttpResponseHandler handler) {
-        String apiUrl = getApiUrl("account/verify_credentials.json");
-        client.get(apiUrl, null, handler);
-    }
+
     // User timeline
     // Get user timeline
     public void getUserTimeline(String screenName, AsyncHttpResponseHandler handler) {

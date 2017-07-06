@@ -22,13 +22,22 @@ public class ProfileActivity extends AppCompatActivity {
 
     TwitterClient client;
     Tweet tweet;
+    String screenName;
+    String userID;
+    Boolean isMe;
+    ImageView ivProfileImage;
+    TextView tvName;
+    TextView tvTagline;
+    TextView tvFollowers;
+    TextView tvFollowing;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
 
-        Boolean isMe = getIntent().getExtras().getBoolean("is_me");
-        String screenName = getIntent().getStringExtra("screen_name");
+        isMe = getIntent().getExtras().getBoolean("is_me");
+        screenName = getIntent().getStringExtra("screen_name");
+        userID = getIntent().getStringExtra("user_ID");
 
         // create the user fragment
         UserTimelineFragment userTimelineFragment = UserTimelineFragment.newInstance(screenName);
@@ -46,9 +55,10 @@ public class ProfileActivity extends AppCompatActivity {
             client.getUserInfo(new JsonHttpResponseHandler() {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                    User user = null;
                     // deserialize the User object
                     try {
-                        User user = User.fromJSON(response);
+                        user = User.fromJSON(response);
                         // set the title of the ActionBar based on the user information
                         getSupportActionBar().setTitle(user.screenName);
                         // populate the user headline
@@ -62,16 +72,31 @@ public class ProfileActivity extends AppCompatActivity {
         else{
             Intent intent = getIntent();
             intent.setExtrasClassLoader(User.class.getClassLoader());
-//            tweet.getIntent.
+            tweet = getIntent().getParcelableExtra("tweet");
+            client.getOtherInfo(tweet.user.screenName, tweet.user.uid, new JsonHttpResponseHandler(){
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                    User user = null;
+                    try {
+                        user = User.fromJSON(response);
+                        // set the title of the ActionBar based on the user information
+                        getSupportActionBar().setTitle(user.screenName);
+                        // populate the user headline
+                        populateUserHeadline(user);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
         }
     }
     public void populateUserHeadline(User user){
-        TextView tvName = (TextView) findViewById(R.id.tvName);
-        TextView tvTagline = (TextView) findViewById(R.id.tvTagline);
-        TextView tvFollowers = (TextView) findViewById(R.id.tvFollowers);
-        TextView tvFollowing = (TextView) findViewById(R.id.tvFollowing);
+        tvName = (TextView) findViewById(R.id.tvName);
+        tvTagline = (TextView) findViewById(R.id.tvTagline);
+        tvFollowers = (TextView) findViewById(R.id.tvFollowers);
+        tvFollowing = (TextView) findViewById(R.id.tvFollowing);
 
-        ImageView ivProfileImage = (ImageView)findViewById(R.id.ivProfileImage);
+        ivProfileImage = (ImageView)findViewById(R.id.ivProfileImage);
         tvName.setText(user.name);
 
         tvTagline.setText(user.tagLine);
