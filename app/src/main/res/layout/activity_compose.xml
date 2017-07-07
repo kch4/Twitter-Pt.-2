@@ -18,8 +18,9 @@
             android:id="@+id/etTweet"
             android:layout_width="384dp"
             android:layout_height="wrap_content"
-            android:hint="What's happening?"
+            android:hint="What's Happening?"
             android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+            android:textSize="14sp"
             tools:layout_editor_absoluteX="0dp"
             tools:layout_editor_absoluteY="0dp"></EditText>
     </android.support.design.widget.TextInputLayout>

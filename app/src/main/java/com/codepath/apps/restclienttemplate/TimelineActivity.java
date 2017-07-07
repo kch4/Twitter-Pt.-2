@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -18,7 +17,6 @@ import fragments.TweetsPagerAdapter;
 
 public class TimelineActivity extends AppCompatActivity implements TweetsListFragment.TweetSelectedListener{
 //    private SwipeRefreshLayout swipeContainer;
-    AlertDialog tweetAlertDialog;
     TweetsPagerAdapter pagerAdapter;
     ViewPager vpPager;
     @Override
@@ -134,15 +132,7 @@ public class TimelineActivity extends AppCompatActivity implements TweetsListFra
 
         Intent intent = new Intent(this, DetailActivity.class);
         intent.putExtra("tweet", tweet);
+        intent.putExtra("favoriteCt", tweet.favoritedCt);
         startActivity(intent);
-        //Toast.makeText(this, tweet.body, Toast.LENGTH_SHORT).show();
-        //intent.putExtra("body", tweet.body);
-//        // Inflate the tweet dialog
-//        View tweetView = LayoutInflater.from(this).inflate(R.layout.item_tweet, null);
-//        // Create the Alert Dialog Builder
-//        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
-//        // Set the view that the alert dialog builder should create
-//        alertDialogBuilder.setView(tweetView);
-//        tweetAlertDialog = alertDialogBuilder.create();
     }
 }

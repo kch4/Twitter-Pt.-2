@@ -3,22 +3,31 @@ package com.codepath.apps.restclienttemplate;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.codepath.apps.restclienttemplate.models.Tweet;
+import com.loopj.android.http.JsonHttpResponseHandler;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Locale;
+
+import cz.msebera.android.httpclient.Header;
 
 /**
  * Created by kathu228 on 6/26/17.
@@ -55,7 +64,7 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.ViewHolder> 
     // bind the values based on the position of the element
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
+    public void onBindViewHolder(final ViewHolder holder, int position) {
         // get the data according to posi.tion
         final Tweet tweet = mTweets.get(position);
 
@@ -64,6 +73,14 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.ViewHolder> 
         holder.tvBody.setText(tweet.body);
         holder.tvScreenName.setText("@"+tweet.user.screenName);
         holder.tvRelativeDate.setText(getRelativeTimeAgo(tweet.createdAt));
+        holder.tvFavCt.setText(tweet.favoritedCt+"");
+        holder.tvRetweetCt.setText(tweet.retweetCt+"");
+        if (tweet.favorited){
+            holder.ibFav.setColorFilter(ContextCompat.getColor(context,R.color.medium_red));
+        }
+        else{
+            holder.ibFav.setColorFilter(ContextCompat.getColor(context,R.color.light_gray));
+        }
 
         Glide.with(context).load(tweet.user.profileImageUrl).into(holder.ivProfileImage);
 
@@ -83,13 +100,62 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.ViewHolder> 
             public void onClick(View v) {
                 Intent i = new Intent(context, ComposeActivity.class);
                 i.putExtra("replying", true);
-//                i.putExtra("screen_name", tweet.user.screenName);
-//                i.putExtra("user_ID", String.valueOf(tweet.user.uid));
                 i.putExtra("currentTweet", tweet);
                 ((Activity) context).startActivity(i);
             }
         });
+        holder.tvBody.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context, DetailActivity.class);
+                intent.putExtra("tweet", tweet);
+                intent.putExtra("favoriteCt", tweet.favoritedCt);
+                ((Activity)context).startActivity(intent);
+
+            }
+        });
+        holder.ibFav.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!tweet.favorited){
+                    tweet.favorited = true;
+                    client.favoriteTweet(tweet.uid, new JsonHttpResponseHandler(){
+                        @Override
+                        public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+//                            holder.tvFavCt.setText(tweet.favoritedCt);
+                            holder.ibFav.setColorFilter(ContextCompat.getColor(context,R.color.medium_red));
+                            holder.tvFavCt.setText(tweet.favoritedCt+1+"");
+                            tweet.favoritedCt += 1;
+                            Toast.makeText(context, "favorited", Toast.LENGTH_LONG).show();
+                        }
+
+                        @Override
+                        public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
+                            Log.d("TwitterClient", errorResponse.toString());
+                        }
+                    });
+
+                }
+                if (tweet.favorited){
+                    tweet.favorited = false;
+                    client.unfavoriteTweet(tweet.uid, new JsonHttpResponseHandler(){
+                        @Override
+                        public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                            holder.ibFav.setColorFilter(ContextCompat.getColor(context,R.color.light_gray));
+                            holder.tvFavCt.setText(tweet.favoritedCt-1+"");
+                            tweet.favoritedCt -= 1;
+                            Toast.makeText(context, "unfavorited", Toast.LENGTH_LONG).show();
+                        }
+                        @Override
+                        public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
+                            Log.d("TwitterClient", errorResponse.toString());
+                        }
+                    });
+                }
+            }
+        });
     }
+
 
     @Override
     public int getItemCount() {
@@ -98,7 +164,7 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.ViewHolder> 
 
     // create ViewHolder class
 
-    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+    public class ViewHolder extends RecyclerView.ViewHolder {
         public ImageView ivProfileImage;
         public TextView tvUsername;
         public TextView tvBody;
@@ -107,73 +173,35 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.ViewHolder> 
         public ImageButton ibReply;
         public ImageButton ibFav;
         public ImageButton ibRetweet;
+        public TextView tvReplyCt;
+        public TextView tvFavCt;
+        public TextView tvRetweetCt;
 
-        public ViewHolder(View itemView){
+        public ViewHolder(View itemView) {
             super(itemView);
-
-            // prform findViewByID lookups
-
             ivProfileImage = (ImageView) itemView.findViewById(R.id.ivProfileImage);
             tvUsername = (TextView) itemView.findViewById(R.id.tvUserName);
             tvBody = (TextView) itemView.findViewById(R.id.tvBody);
+            tvRelativeDate = (TextView) itemView.findViewById(R.id.tvRelativeDate);
             tvScreenName = (TextView) itemView.findViewById(R.id.tvScreenName);
-            tvRelativeDate = (TextView)itemView.findViewById(R.id.tvRelativeDate);
-            ibReply = (ImageButton)itemView.findViewById(R.id.ibReply);
-            ibFav = (ImageButton)itemView.findViewById(R.id.ibFav);
+            ibReply = (ImageButton) itemView.findViewById(R.id.ibReply);
             ibRetweet = (ImageButton) itemView.findViewById(R.id.ibRetweet);
+            ibFav = (ImageButton) itemView.findViewById(R.id.ibFav);
+            tvFavCt = (TextView) itemView.findViewById(R.id.tvFavCt);
+            tvRetweetCt = (TextView) itemView.findViewById(R.id.tvRetweetCt);
 
-            ibReply.setOnClickListener(this);
-            ibFav.setOnClickListener(this);
-            ibRetweet.setOnClickListener(this);
-
-            // handle row click event
+            //handle row click event
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onClick(View v) {
-                    if (mListener != null){
-                    // get the position of row element
+                public void onClick(View view) {
+                    if (mListener != null) {
+                        //get the position of row element
                         int position = getAdapterPosition();
-                    // fire the listener callback
-                        mListener.onItemSelected(v,  position);
+                        // fire the listener callback
+                        mListener.onItemSelected(view, position);
+                    }
                 }
-            }});
-
-        }
-
-        @Override
-        public void onClick(View v) {
-            int position = getAdapterPosition();
-            //Button b = (Button) v;
-            Intent intent;
-//            switch(v.getId()) {
-//
-//                case R.id.ivProfileImage:
-//                    if (position != RecyclerView.NO_POSITION) {
-//                        Tweet tweet = mTweets.get(position);
-//                        intent = new Intent(v.getContext(), ProfileActivity.class);
-//                        intent.putExtra("is_me", false);
-//                        intent.putExtra("screen_name", tweet.user.screenName);
-//                        //intent.putExtra("")
-//                    }
-//                    break;
-//                case R.id.tvBody:
-//                    if (position != RecyclerView.NO_POSITION) {
-//                        Tweet tweet = mTweets.get(position);
-//                        intent = new Intent(v.getContext(), DetailActivity.class);
-//                        intent.putExtra("body", tweet.body);
-//                        intent.putExtra("screen_name", tweet.user.screenName);
-//                        //intent.putExtra("")
-//                    }
-//                case R.id.ibReply:
-//                    //compose activity
-//                    Log.d("Sending data", "Reply"); // perform
-////                    intent = new Intent(context, ComposeActivity.class);
-//                    // action
-//                    break;
-////                case R.id.YOUR_SECOND_BUTTON:
-////                    // Do something
-////                    break;
-//            }
+            });
         }
     }
     public void clear() {

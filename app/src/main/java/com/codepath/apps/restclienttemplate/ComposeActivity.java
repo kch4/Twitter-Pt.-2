@@ -79,8 +79,6 @@ public class ComposeActivity extends AppCompatActivity {
                     Intent data = new Intent();
                     // Pass relevant data back as a result
                     data.putExtra("new", tweet);
-                    //data.putExtra("UID", uid);
-//                  data.putExtra("code", 200); // ints work too
                     // Activity finished ok, return the data
                     setResult(RESULT_OK, data); // set result code and bundle data for response
                     finish(); // closes the activity, pass data to parent

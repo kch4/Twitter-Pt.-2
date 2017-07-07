@@ -78,6 +78,7 @@ public class TwitterClient extends OAuthBaseClient {
         params.put("user_id", userID);
         client.get(apiUrl,params,handler);
     }
+    // Posting
     public void sendTweet(String message, AsyncHttpResponseHandler handler) {
         String apiUrl = getApiUrl("statuses/update.json");
         // Can specify query string params directly or through RequestParams.
@@ -96,7 +97,20 @@ public class TwitterClient extends OAuthBaseClient {
         params.put("statusID", paramMessage);
         client.post(apiUrl, params, handler);
     }
-
+    // Favoriting
+    public void favoriteTweet(long paramMessage, AsyncHttpResponseHandler handler){
+        String apiUrl = getApiUrl("favorites/create.json");
+        RequestParams params = new RequestParams();
+        params.put("id", paramMessage);
+        client.post(apiUrl, params, handler);
+    }
+    // Unfavoriting
+    public void unfavoriteTweet(long paramMessage, AsyncHttpResponseHandler handler){
+        String apiUrl = getApiUrl("favorites/destroy.json");
+        RequestParams params = new RequestParams();
+        params.put("id", paramMessage);
+        client.post(apiUrl, params, handler);
+    }
     // User timeline
     // Get user timeline
     public void getUserTimeline(String screenName, AsyncHttpResponseHandler handler) {
