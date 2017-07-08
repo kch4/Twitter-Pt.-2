@@ -76,10 +76,18 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.ViewHolder> 
         holder.tvFavCt.setText(tweet.favoritedCt+"");
         holder.tvRetweetCt.setText(tweet.retweetCt+"");
         if (tweet.favorited){
+            holder.ibFav.setPressed(true);
             holder.ibFav.setColorFilter(ContextCompat.getColor(context,R.color.medium_red));
         }
         else{
+            holder.ibFav.setPressed(false);
             holder.ibFav.setColorFilter(ContextCompat.getColor(context,R.color.light_gray));
+        }
+        if (tweet.retweeted){
+            holder.ibRetweet.setColorFilter(ContextCompat.getColor(context,R.color.medium_green));
+        }
+        else{
+            holder.ibRetweet.setColorFilter(ContextCompat.getColor(context,R.color.light_gray));
         }
 
         Glide.with(context).load(tweet.user.profileImageUrl).into(holder.ivProfileImage);
@@ -122,11 +130,11 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.ViewHolder> 
                     client.favoriteTweet(tweet.uid, new JsonHttpResponseHandler(){
                         @Override
                         public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-//                            holder.tvFavCt.setText(tweet.favoritedCt);
+                            holder.ibFav.setPressed(true);
                             holder.ibFav.setColorFilter(ContextCompat.getColor(context,R.color.medium_red));
                             holder.tvFavCt.setText(tweet.favoritedCt+1+"");
                             tweet.favoritedCt += 1;
-                            Toast.makeText(context, "favorited", Toast.LENGTH_LONG).show();
+                            Toast.makeText(context, "favorited", Toast.LENGTH_SHORT).show();
                         }
 
                         @Override
@@ -141,10 +149,50 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.ViewHolder> 
                     client.unfavoriteTweet(tweet.uid, new JsonHttpResponseHandler(){
                         @Override
                         public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                            holder.ibFav.setPressed(false);
                             holder.ibFav.setColorFilter(ContextCompat.getColor(context,R.color.light_gray));
                             holder.tvFavCt.setText(tweet.favoritedCt-1+"");
                             tweet.favoritedCt -= 1;
-                            Toast.makeText(context, "unfavorited", Toast.LENGTH_LONG).show();
+                            Toast.makeText(context, "unfavorited", Toast.LENGTH_SHORT).show();
+                        }
+                        @Override
+                        public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
+                            Log.d("TwitterClient", errorResponse.toString());
+                        }
+                    });
+                }
+            }
+        });
+        holder.ibRetweet.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!tweet.retweeted){
+                    client.retweet(tweet.uid, new JsonHttpResponseHandler(){
+                        @Override
+                        public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                            tweet.retweeted = true;
+                            holder.ibRetweet.setColorFilter(ContextCompat.getColor(context,R.color.medium_green));
+                            holder.tvRetweetCt.setText(tweet.retweetCt+1+"");
+                            tweet.retweetCt += 1;
+                            Toast.makeText(context, "retweeted", Toast.LENGTH_SHORT).show();
+                        }
+
+                        @Override
+                        public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
+                            Log.d("TwitterClient", errorResponse.toString());
+                        }
+                    });
+
+                }
+                if (tweet.retweeted){
+                    client.unretweet(tweet.uid, new JsonHttpResponseHandler(){
+                        @Override
+                        public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                            tweet.retweeted = false;
+                            holder.ibRetweet.setColorFilter(ContextCompat.getColor(context,R.color.light_gray));
+                            holder.tvRetweetCt.setText(tweet.retweetCt-1+"");
+                            tweet.retweetCt -= 1;
+                            Toast.makeText(context, "unretweeted", Toast.LENGTH_SHORT).show();
                         }
                         @Override
                         public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
@@ -173,7 +221,6 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.ViewHolder> 
         public ImageButton ibReply;
         public ImageButton ibFav;
         public ImageButton ibRetweet;
-        public TextView tvReplyCt;
         public TextView tvFavCt;
         public TextView tvRetweetCt;
 

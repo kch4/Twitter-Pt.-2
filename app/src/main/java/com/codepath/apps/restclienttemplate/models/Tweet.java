@@ -34,11 +34,10 @@ public class Tweet implements Parcelable {
 //        tweet.screen = jsonObject.getString("screen_name");
         tweet.createdAt = jsonObject.getString("created_at");
         tweet.user = User.fromJSON(jsonObject.getJSONObject("user"));
-        tweet.retweeted = jsonObject.getBoolean("retweeted");
-        tweet.retweetCt = jsonObject.getInt("retweet_count");
         tweet.favorited = jsonObject.getBoolean("favorited");
         tweet.favoritedCt = jsonObject.getInt("favorite_count");
-
+        tweet.retweeted = jsonObject.getBoolean("retweeted");
+        tweet.retweetCt = jsonObject.getInt("retweet_count");
 
         return tweet;
     }
@@ -57,7 +56,7 @@ public class Tweet implements Parcelable {
         dest.writeString(this.screen);
         dest.writeByte((byte) (this.favorited ? 1 : 0));
         dest.writeInt(this.favoritedCt);
-        dest.writeByte((byte) (this.favorited ? 1 : 0));
+        dest.writeByte((byte) (this.retweeted ? 1 : 0));
         dest.writeInt(this.retweetCt);
 //        dest.writeByte((byte) (this.replied ? 1 : 0));
 //        dest.writeInt(this.repliedCt);
